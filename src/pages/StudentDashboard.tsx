@@ -204,7 +204,7 @@ export default function StudentDashboard() {
   const { click, success, error } = useSound();
   const user = store.getCurrentUser();
   const prevLevelRef = useRef<number | null>(null);
-  const currentFreezeCost = 400 * Math.pow(2, user?.streakFreezeCount || 0);
+  const currentFreezeCost = Math.floor(50 * Math.pow(1.5, user?.streakFreezeCount || 0));
   
   const [levelUpData, setLevelUpData] = useState<{level: number, quote: string} | null>(null);
 
@@ -2825,7 +2825,7 @@ export default function StudentDashboard() {
                           whileHover={{ scale: 1.02 }}
                           onClick={() => setSelectedUserProfile(u)}
                           key={u.id} className={cn(
-                            "group flex items-center justify-between p-3 sm:p-4 rounded-xl border transition-all cursor-pointer backdrop-blur-md", 
+                            "group flex items-center justify-between p-3 sm:p-4 rounded-xl border transition-all cursor-pointer backdrop-blur-md content-visibility-auto", 
                             u.id === user?.id 
                               ? "bg-orange-500/15 border-orange-500 shadow-lg ring-1 ring-orange-500/50" 
                               : "bg-white/40 dark:bg-black/20 border-zinc-200 dark:border-zinc-800 hover:border-orange-500/30 hover:bg-white/60 dark:hover:bg-black/40"
@@ -3036,11 +3036,11 @@ export default function StudentDashboard() {
                 bgEffect: "bg-emerald-500",
                 actionText: "Thu nạp nhãn lực",
                 onBuy: () => {
-                  if (user && user.points < 300) {
+                  if (user && user.points < 80) {
                     alert("Chưa đủ điểm Tinh Hoa để sở hữu vật phẩm thần thoại này!");
                     return;
                   }
-                  if (store.buyArgusEyes(300)) {
+                  if (store.buyArgusEyes(80)) {
                     alert("Cặp mắt Argus đã bừng sáng! Bạn được Agent 3 giảng giải tận gốc rễ trong 24 giờ tới.");
                   }
                 }
@@ -3063,7 +3063,7 @@ export default function StudentDashboard() {
                 </p>
               </div>
               <div className="mt-4 pt-4 border-t border-zinc-200/50 dark:border-white/5 flex items-center justify-between">
-                <span className="font-extrabold text-base text-emerald-600 dark:text-emerald-400">300 Tinh Hoa</span>
+                <span className="font-extrabold text-base text-emerald-600 dark:text-emerald-400">80 Tinh Hoa</span>
                 <span className="text-[10px] uppercase font-bold text-zinc-400">Bấm để xem</span>
               </div>
             </div>
@@ -3077,15 +3077,15 @@ export default function StudentDashboard() {
                 title: "Buff Siêu Cày Cuốc",
                 desc: "Liều ăn nhiều (High Risk High Reward). Trong 2 giờ tới: Làm đúng được nhận x3 XP/Tinh Hoa. Nhưng nếu trả lời SAI dù MỘT câu -> Sập toàn bộ Streak hiện tại hoặc bị trừ thẳng 1 Level!",
                 lore: "Điểm yếu chí mạng đổi lấy sức mạnh vô địch của á thần. Chỉ dành cho những kẻ leo hạng máu lửa và bất khả chiến bại.",
-                cost: 400,
+                cost: 100,
                 bgEffect: "bg-rose-500",
                 actionText: "Hiến tế rủi ro",
                 onBuy: () => {
-                  if (user && user.points < 400) {
+                  if (user && user.points < 100) {
                     alert("Không đủ điểm Tinh Hoa để thực hiện nghi thức này!");
                     return;
                   }
-                  if (store.buyAchilles(400)) {
+                  if (store.buyAchilles(100)) {
                     alert("Giao ước máu đã thành lập! 2 giờ tới là lúc bạn chứng tỏ sức vóc của á thần Achilles (XP MỚI ĐƯỢC x3)!");
                   }
                 }
@@ -3136,20 +3136,20 @@ export default function StudentDashboard() {
                 </p>
               </div>
               <div className="mt-4 pt-4 border-t border-zinc-200/50 dark:border-white/5 flex items-center justify-between">
-                <span className="font-extrabold text-base text-orange-600 dark:text-orange-400">600 Tinh Hoa</span>
+                <span className="font-extrabold text-base text-orange-600 dark:text-orange-400">200 Tinh Hoa</span>
                 <button
                   onClick={() => {
-                    if (user && user.points < 600) {
-                      alert("Cần 600 Tinh Hoa để chứng minh năng lực. Hãy tiếp tục học nhé!");
+                    if (user && user.points < 200) {
+                      alert("Cần 200 Tinh Hoa để chứng minh năng lực. Hãy tiếp tục học nhé!");
                       return;
                     }
-                    if (!confirm(`Xác nhận đánh đổi 600 Tinh Hoa để lập tức thăng 1 cấp độ?`)) return;
-                    if (store.buyLevelUp(600)) {
+                    if (!confirm(`Xác nhận đánh đổi 200 Tinh Hoa để lập tức thăng 1 cấp độ?`)) return;
+                    if (store.buyLevelUp(200)) {
                       alert("Phép thuật khai sáng! Trí tuệ thăng hoa, ngài đã được nâng lên cấp độ mới! (Level +1)");
                       setForceRender(prev => prev + 1);
                     }
                   }}
-                  disabled={user ? user.points < 600 : true}
+                  disabled={user ? user.points < 200 : true}
                   className="px-4 py-2 bg-orange-500 text-white rounded-xl text-xs font-bold shadow-md shadow-orange-500/20 hover:shadow-orange-500/40 active:scale-95 transition"
                 >
                   Hóa Thần
@@ -3309,20 +3309,20 @@ export default function StudentDashboard() {
                 </p>
               </div>
               <div className="mt-4 pt-4 border-t border-zinc-200/50 dark:border-white/5 flex items-center justify-between">
-                <span className="font-extrabold text-base text-red-600 dark:text-red-400">200 Tinh Hoa</span>
+                <span className="font-extrabold text-base text-red-600 dark:text-red-400">50 Tinh Hoa</span>
                 <button
                   onClick={async () => {
                     if (user?.isSchoolLover) {
                       alert("Tâm trí của ngài đã mang sẵn ngọn lửa nhiệt huyết rồi!");
                       return;
                     }
-                    if (user && user.points < 200) {
+                    if (user && user.points < 50) {
                       alert("Ngài chưa đủ Tinh Hoa (Aether)!");
                       return;
                     }
-                    if (!confirm("Xác nhận đánh đổi 200 Tinh Hoa để sở hữu biểu tượng Trái Tim Sư Tử?")) return;
+                    if (!confirm("Xác nhận đánh đổi 50 Tinh Hoa để sở hữu biểu tượng Trái Tim Sư Tử?")) return;
                     try {
-                      const newPoints = user!.points - 200;
+                      const newPoints = user!.points - 50;
                       const { dbService } = await import("../lib/firebase");
                       await dbService.updateUserProfile(user!.id, { 
                         points: newPoints,
@@ -3371,15 +3371,15 @@ export default function StudentDashboard() {
                 </p>
               </div>
               <div className="mt-4 pt-4 border-t border-zinc-200/50 dark:border-white/5 flex items-center justify-between">
-                <span className="font-extrabold text-base text-fuchsia-600 dark:text-fuchsia-400">200 Tinh Hoa</span>
+                <span className="font-extrabold text-base text-fuchsia-600 dark:text-fuchsia-400">50 Tinh Hoa</span>
                 <button
                   onClick={() => {
-                    if (user && user.points < 200) {
-                      alert("Không đủ 200 Tinh Hoa để mở chiếc hộp bí ẩn này!");
+                    if (user && user.points < 50) {
+                      alert("Không đủ 50 Tinh Hoa để mở chiếc hộp bí ẩn này!");
                       return;
                     }
-                    if (!confirm("Xác nhận đánh đổi 200 Tinh Hoa để mở hộp Pandora bí ẩn?")) return;
-                    store.updateCurrentUser({ points: user.points - 200 }); 
+                    if (!confirm("Xác nhận đánh đổi 50 Tinh Hoa để mở hộp Pandora bí ẩn?")) return;
+                    store.updateCurrentUser({ points: user.points - 50 }); 
                     
                     const rand = Math.random();
                     if (rand < 0.1) {
@@ -3387,8 +3387,8 @@ export default function StudentDashboard() {
                        store.buyXPPotion(0, 100);
                        alert("JACKPOT! Bạn mở ra sức mạnh thần thánh: Tăng 1 Cấp Độ và nhận 100 XP!");
                     } else if (rand < 0.4) {
-                       store.updateCurrentUser({ points: store.getCurrentUser()!.points + 350 }); 
-                       alert("Quả ngọt! Chiếc hộp trả lại bạn 350 Tinh Hoa (Lãi 150).");
+                       store.updateCurrentUser({ points: store.getCurrentUser()!.points + 120 }); 
+                       alert("Quả ngọt! Chiếc hộp trả lại bạn 120 Tinh Hoa (Lãi 70).");
                     } else if (rand < 0.7) {
                        store.buyXPPotion(0, 75);
                        alert("Không tệ! Bạn nhận được tri thức thượng cổ quy đổi thành 75 XP.");
@@ -3771,24 +3771,24 @@ export default function StudentDashboard() {
                 </div>
               </div>
               <div className="mt-4 pt-4 border-t border-zinc-200/50 dark:border-white/5 flex items-center justify-between">
-                <span className="font-extrabold text-base text-indigo-600 dark:text-indigo-400">250 Tinh Hoa</span>
+                <span className="font-extrabold text-base text-indigo-600 dark:text-indigo-400">60 Tinh Hoa</span>
                 <button
                   onClick={async () => {
-                    if (user && user.points < 250) {
-                      alert("Thiếu 250 Tinh Hoa rồi!");
+                    if (user && user.points < 60) {
+                      alert("Thiếu 60 Tinh Hoa rồi!");
                       return;
                     }
                     if (user?.doubleXPUntil && user.doubleXPUntil > Date.now()) {
                       alert("Bạn đang trong trạng thái x2 XP rồi!");
                       return;
                     }
-                    if (!confirm("Xác nhận đổi 250 Tinh Hoa để nhận trạng thái x2 XP trong 15 phút?")) return;
-                    if (store.buyDoubleXP(250)) {
+                    if (!confirm("Xác nhận đổi 60 Tinh Hoa để nhận trạng thái x2 XP trong 15 phút?")) return;
+                    if (store.buyDoubleXP(60)) {
                       alert("Đã uống nước tăng lực! X2 XP trong 15 phút bắt đầu!");
                       setForceRender(prev => prev + 1);
                     }
                   }}
-                  disabled={user ? user.points < 250 : true}
+                  disabled={user ? user.points < 60 : true}
                   className="px-4 py-2 bg-indigo-500 text-white rounded-xl text-xs font-bold shadow-md shadow-indigo-500/20 hover:shadow-indigo-500/40 active:scale-95 transition"
                 >
                   Uống Ngay
@@ -3826,24 +3826,24 @@ export default function StudentDashboard() {
                 </div>
               </div>
               <div className="mt-4 pt-4 border-t border-zinc-200/50 dark:border-white/5 flex items-center justify-between">
-                <span className="font-extrabold text-base text-slate-600 dark:text-slate-400">200 Tinh Hoa</span>
+                <span className="font-extrabold text-base text-slate-600 dark:text-slate-400">50 Tinh Hoa</span>
                 <button
                   onClick={async () => {
-                    if (user && user.points < 200) {
-                      alert("Thiếu 200 Tinh Hoa rồi!");
+                    if (user && user.points < 50) {
+                      alert("Thiếu 50 Tinh Hoa rồi!");
                       return;
                     }
                     if (user?.hideRankUntil && user.hideRankUntil > Date.now()) {
                       alert("Bạn đã ẩn danh rồi!");
                       return;
                     }
-                    if (!confirm("Xác nhận đổi 200 Tinh Hoa để tàng hình trên Leaderboard trong 24 giờ?")) return;
-                    if (store.buyHideRank(200)) {
+                    if (!confirm("Xác nhận đổi 50 Tinh Hoa để tàng hình trên Leaderboard trong 24 giờ?")) return;
+                    if (store.buyHideRank(50)) {
                       alert("Che giấu hành tung thành công! Bạn đã biến mất khỏi bảng xếp hạng.");
                       setForceRender(prev => prev + 1);
                     }
                   }}
-                  disabled={user ? user.points < 200 : true}
+                  disabled={user ? user.points < 50 : true}
                   className="px-4 py-2 bg-slate-500 text-white rounded-xl text-xs font-bold shadow-md shadow-slate-500/20 hover:shadow-slate-500/40 active:scale-95 transition"
                 >
                   Đeo Mặt Nạ

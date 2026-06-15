@@ -72,7 +72,7 @@ const FeedItemRow = React.memo<FeedItemRowProps>(({ item, currentUserId, userRol
       exit={{ opacity: 0, scale: 0.95 }}
       transition={{ duration: 0.2 }}
       className={cn(
-        "relative flex gap-3 p-3.5 rounded-xl border backdrop-blur-md transition-all duration-300",
+        "relative flex gap-3 p-3.5 rounded-xl border backdrop-blur-md transition-all duration-300 content-visibility-auto",
         item.isPinned
           ? "bg-orange-500/10 dark:bg-orange-500/[0.05] border-orange-500/40 shadow-md ring-1 ring-orange-500/25"
           : isMine 

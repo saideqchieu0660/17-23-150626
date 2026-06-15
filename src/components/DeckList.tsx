@@ -46,7 +46,7 @@ const TiltCard = ({ children, delayIdx, className = "" }: { children: React.Reac
 
   if (isEcoMode) {
     return (
-      <div className={`h-full ${className}`}>
+      <div className={`h-full content-visibility-auto ${className}`}>
         <div className="relative p-6 sm:p-8 rounded-2xl flex flex-col group overflow-visible min-h-[17rem] h-full border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 transition-colors shadow-sm">
           {children}
         </div>
@@ -67,7 +67,7 @@ const TiltCard = ({ children, delayIdx, className = "" }: { children: React.Reac
         rotateY,
         transformStyle: "preserve-3d",
       }}
-      className={`perspective-1000 h-full ${className}`}
+      className={`perspective-1000 h-full content-visibility-auto ${className}`}
     >
       <div className="card-3d relative p-6 sm:p-8 rounded-2xl flex flex-col group overflow-visible min-h-[17rem] h-full transform-style-3d bg-white/70 dark:bg-black/80">
         {children}

@@ -898,7 +898,15 @@ export const store = {
              let multiplier = 1;
              if (isAchilles) multiplier = 3;
              else if (isDoubleXP) multiplier = 2;
-             currentUser.points += multiplier;
+             
+             // ANTI-SPAM MECHANISM: Ngăn cày điểm bằng cách giới hạn 2 tiếng/mỗi thẻ mới có điểm
+             const twoHours = 2 * 60 * 60 * 1000;
+             const canEarnPoints = !card.lastPointAwarded || (Date.now() - card.lastPointAwarded >= twoHours);
+             
+             if (canEarnPoints) {
+                 currentUser.points += multiplier;
+                 card.lastPointAwarded = Date.now();
+             }
          }
      } else {
          rep = 0;
@@ -935,7 +943,8 @@ export const store = {
              repetitionCount: card.repetitionCount,
              easeFactor: card.easeFactor,
              isNewCard: card.isNewCard,
-             isWeakCard: card.isHard
+             isWeakCard: card.isHard,
+             lastPointAwarded: card.lastPointAwarded
          };
 
          import('./offlineSync').then(({ OfflineSyncQueue }) => {
