@@ -83,12 +83,27 @@ export const DeckList = ({ decks, showSearch = true, groupBySubject = false, onC
     return saved ? JSON.parse(saved) : [];
   });
   
+const safeSetItem = (key: string, value: string) => {
+    try {
+      localStorage.setItem(key, value);
+    } catch (e: any) {
+      console.warn(`LocalStorage quota exceeded when setting ${key}. Cleaning up...`);
+      try {
+        localStorage.removeItem('local_global_activity_feed');
+        localStorage.removeItem('henosis-failed-chunks');
+        localStorage.setItem(key, value);
+      } catch (e2) {
+        console.error(`Failed to save ${key} to localStorage even after cleanup.`);
+      }
+    }
+  };
+
   const togglePin = (deckId: string) => {
     setPinnedDecks(prev => {
       const newPinned = prev.includes(deckId) 
         ? prev.filter(id => id !== deckId) 
         : [...prev, deckId];
-      localStorage.setItem(`pinned_decks_${currentUser?.id || 'guest'}`, JSON.stringify(newPinned));
+      safeSetItem(`pinned_decks_${currentUser?.id || 'guest'}`, JSON.stringify(newPinned));
       return newPinned;
     });
   };
@@ -138,7 +153,15 @@ export const DeckList = ({ decks, showSearch = true, groupBySubject = false, onC
   };
 
   const [searchQuery, setSearchQuery] = useState("");
-  const [sortOrder, setSortOrder] = useState<"default" | "newest" | "oldest" | "az" | "za">("default");
+  const [sortOrder, setSortOrder] = useState<"default" | "newest" | "oldest" | "az" | "za">(() => {
+    const saved = localStorage.getItem('deckSortOrder');
+    return (saved as "default" | "newest" | "oldest" | "az" | "za") || "default";
+  });
+  
+  useEffect(() => {
+    safeSetItem('deckSortOrder', sortOrder);
+  }, [sortOrder]);
+
   const [recentSearches, setRecentSearches] = useState<string[]>(() => {
     const saved = localStorage.getItem('recentSearches');
     return saved ? JSON.parse(saved) : [];
@@ -161,7 +184,7 @@ export const DeckList = ({ decks, showSearch = true, groupBySubject = false, onC
     if (!query.trim()) return;
     const newRecent = [query, ...recentSearches.filter(s => s !== query)].slice(0, 5);
     setRecentSearches(newRecent);
-    localStorage.setItem('recentSearches', JSON.stringify(newRecent));
+    safeSetItem('recentSearches', JSON.stringify(newRecent));
   };
 
   const sortedAndFilteredDecks = useMemo(() => {
