@@ -1,0 +1,448 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;1,400;1,600&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;700&display=swap');
+@import "tailwindcss";
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  --ui-density: 1.0;
+}
+
+@theme {
+  --spacing: calc(0.25rem * var(--ui-density, 1));
+  --font-sans: "Inter", sans-serif;
+  --font-display: "Playfair Display", serif;
+  --font-roman: "Cormorant GARAMOND", "Playfair Display", serif;
+  --font-serif: "Playfair Display", serif;
+  --font-mono: "JetBrains Mono", monospace;
+
+  --color-gold-400: #fb923c;
+  --color-gold-500: #f97316;
+  --color-gold-600: #ea580c;
+  --color-cyber-gold: #f97316;
+}
+
+@layer base {
+  html, body {
+    @apply antialiased min-h-screen font-sans;
+    @apply text-zinc-900;
+    overflow-x: hidden;
+    max-width: 100vw;
+    width: 100%;
+  }
+  body {
+    background-color: #fafafa;
+  }
+  .dark body {
+    @apply text-zinc-300;
+    background-color: #09090b; /* zinc-950 solid background */
+    animation: none !important;
+  }
+
+  /* KILL BACKDROP BLUR & HEAVY FILTERS GLOBALLY FOR 60FPS ON POTATO DEVICES */
+  * {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    box-shadow: none !important; /* Stripping heavy shadows */
+  }
+
+  *:focus-visible {
+    outline: 1px solid rgba(249, 115, 22, 0.5);
+    outline-offset: 2px;
+    border-radius: 2px;
+    transition: outline-color 0.15s ease-out;
+  }
+}
+
+/* ========================================================================= */
+/* DUAL-FONT ETHEREAL TYPOGRAPHY SYSTEM */
+/* ========================================================================= */
+
+h1, h2, h3, h4, h5, h6, 
+.dialog-title, .card-title, .hero-title,
+[class*="text-2xl"], [class*="text-3xl"], [class*="text-4xl"], [class*="text-5xl"], [class*="text-6xl"] {
+  font-family: var(--font-serif) !important;
+  font-style: italic !important;
+  font-weight: 500;
+  letter-spacing: 0.025em;
+}
+
+p, span, div, .font-sans {
+  font-family: var(--font-sans);
+}
+
+p, .subtext, .chat-stream, .numeric {
+  font-weight: 300 !important;
+  letter-spacing: 0.025em;
+}
+
+strong, b {
+  font-weight: 500;
+}
+
+/* ========================================================================= */
+/* OLYMPUS HIGH-ARTISTRY GREEK ETHEREAL SYSTEM */
+/* STRICT 60FPS: ONLY TRANSFORM & OPACITY */
+/* ========================================================================= */
+
+/* 1. Constellation Sparkle Background */
+@keyframes sparklePulse {
+  0%, 100% {
+    opacity: 0.1;
+    transform: scale(0.8);
+  }
+  50% {
+    opacity: 0.9;
+    transform: scale(1.3);
+  }
+}
+
+.sparkle-star {
+  fill: #ea580c;
+  animation: sparklePulse infinite ease-in-out;
+  will-change: opacity, transform;
+  transform-origin: center;
+}
+.dark .sparkle-star {
+  fill: #f97316;
+}
+
+/* Marble overlay using svg data uri */
+.marble-overlay {
+  opacity: 0.03;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.005' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  background-size: cover;
+}
+.dark .marble-overlay {
+  opacity: 0.05;
+}
+
+/* Navigation button ripple */
+.nav-button-ripple {
+  position: relative;
+  overflow: hidden;
+  will-change: transform;
+}
+.nav-button-ripple::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 150%;
+  height: 150%;
+  background: radial-gradient(circle, rgba(234,88,12,0.15) 0%, transparent 60%);
+  transform: translate(-50%, -50%) scale(0.1);
+  opacity: 0;
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s ease-out;
+  pointer-events: none;
+  z-index: 0;
+  will-change: transform, opacity;
+}
+.dark .nav-button-ripple::before {
+  background: radial-gradient(circle, rgba(249,115,22,0.15) 0%, transparent 60%);
+}
+.nav-button-ripple:hover::before, .nav-button-ripple:active::before {
+  transform: translate(-50%, -50%) scale(1);
+  opacity: 1;
+}
+.nav-button-ripple > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* 2. Constellation Geometry */
+.constellation-line {
+  stroke: rgba(228, 228, 231, 0.4);
+  stroke-width: 1px;
+  fill: none;
+  transition: stroke 0.3s ease;
+  will-change: stroke;
+}
+
+.dark .constellation-line {
+  stroke: rgba(39, 39, 42, 1);
+}
+
+.constellation-line.active,
+*:hover > .constellation-line {
+  stroke: #ea580c;
+}
+
+.dark .constellation-line.active,
+.dark *:hover > .constellation-line {
+  stroke: #f97316;
+}
+
+h1::after, h2::after {
+  content: "";
+  display: block;
+  width: 120px;
+  max-width: 100%;
+  height: 1px;
+  margin-top: 0.5rem;
+  background-color: rgba(228, 228, 231, 0.4);
+  transition: background-color 0.3s ease, width 0.3s ease;
+  will-change: background-color, width;
+}
+.dark h1::after, .dark h2::after {
+  background-color: rgba(39, 39, 42, 1);
+}
+
+h1:hover::after, h2:hover::after {
+  background-color: #ea580c;
+  width: 160px;
+}
+.dark h1:hover::after, .dark h2:hover::after {
+  background-color: #f97316;
+}
+
+/* 2. The Prometheus Pulse */
+@keyframes prometheusPulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scale(1.15);
+    opacity: 0.15;
+  }
+}
+
+.prometheus-pulse {
+  position: relative;
+}
+
+.prometheus-pulse::before {
+  content: "";
+  position: absolute;
+  inset: -4px;
+  border-radius: inherit;
+  border: 1px solid #ea580c;
+  opacity: 0.5;
+  pointer-events: none;
+  animation: prometheusPulse 4s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  will-change: transform, opacity;
+}
+
+.dark .prometheus-pulse::before {
+  border-color: #f97316;
+}
+
+/* 3. Asymmetric Micro-interactions (Stone-carved responsiveness) */
+.stone-carved {
+  transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+  will-change: transform;
+}
+
+.stone-carved:active,
+.stone-carved:hover {
+  transform: translateY(-2px);
+}
+
+.stone-carved:active svg[class*="lucide"],
+.stone-carved:hover svg[class*="lucide"] {
+  transform: translateY(-2px);
+  stroke: #ea580c !important;
+  transition: transform 0.2s ease, stroke 0.2s ease;
+  will-change: transform;
+}
+
+.dark .stone-carved:active svg[class*="lucide"],
+.dark .stone-carved:hover svg[class*="lucide"] {
+  stroke: #f97316 !important;
+}
+
+/* Base icon transition */
+svg[class*="lucide"] {
+  stroke-width: 1.2px !important;
+  transition: transform 0.2s ease, stroke 0.2s ease;
+  will-change: transform;
+}
+
+
+/* Theme Transition logic using View Transitions API Ethereal Optimization */
+.theme-transition::view-transition-old(root),
+.theme-transition::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+  display: block;
+}
+.theme-transition::view-transition-old(root) {
+  z-index: 1;
+}
+.theme-transition::view-transition-new(root) {
+  z-index: 2;
+  will-change: clip-path; /* Hardware accelerate the clip-path expansion */
+}
+
+/* Layer 1: Ethereal Glass / Minimalism */
+.card-3d, .glass {
+  @apply relative text-left bg-white dark:bg-zinc-950 rounded-xl transition-all duration-300;
+  border: 1px solid rgba(0, 0, 0, 0.05); /* Crisp line border */
+  box-shadow: none !important;
+  background-image: none !important;
+  will-change: transform;
+}
+
+.dark .card-3d, .dark .glass {
+  border: 1px solid rgba(255, 255, 255, 0.05); /* Crisp dark mode border */
+}
+
+.card-3d::before, .glass::before, .card-3d::after, .glass::after {
+  display: none !important;
+}
+
+@media (hover: hover) {
+  .card-3d:hover, .glass:hover {
+    transform: translateY(-2px);
+    border-color: rgba(249, 115, 22, 0.3);
+    transition: border-color 0.2s ease, transform 0.2s ease;
+  }
+}
+
+/* Layer 2: Ethereal Buttons */
+.btn-3d {
+  @apply relative overflow-hidden transition-all duration-200 ease-out font-light rounded-lg tracking-wide border;
+  box-shadow: none !important;
+  background: transparent;
+  border-color: rgba(0, 0, 0, 0.1);
+}
+.dark .btn-3d {
+  border-color: rgba(255, 255, 255, 0.1);
+  color: rgba(250, 250, 250, 0.9);
+}
+
+.btn-3d::after, .btn-3d::before {
+  display: none !important;
+}
+
+@media (hover: hover) {
+  .btn-3d:hover {
+    transform: none;
+    background: rgba(249, 115, 22, 0.05);
+  }
+}
+
+.btn-3d:active {
+  transform: translateY(2px) scale(0.97);
+}
+
+.btn-3d-primary {
+  @apply text-white border-none bg-orange-600 dark:bg-orange-500;
+  box-shadow: none !important;
+}
+
+@media (hover: hover) {
+  .btn-3d-primary:hover {
+    @apply bg-orange-700 dark:bg-orange-600;
+  }
+}
+
+/* Inputs & Form Fields */
+.input-3d {
+  @apply bg-white dark:bg-zinc-900 border border-stone-200 dark:border-zinc-800 rounded-xl transition-all duration-300 ease-out outline-none focus:ring-1 focus:ring-orange-500/50;
+  box-shadow: none !important;
+}
+
+/* Layer 3: Glass Modals (Highest Z-index) */
+.modal-glass-overlay {
+  @apply fixed inset-0 z-40 bg-zinc-100/80 dark:bg-zinc-950/80 transition-all duration-300 ease-out;
+  backdrop-filter: none !important;
+}
+.modal-glass-content {
+  @apply relative z-50 bg-white dark:bg-zinc-950 border border-black/5 dark:border-white/10 transition-all duration-300 ease-out sm:rounded-[2rem] overflow-hidden;
+  box-shadow: none !important;
+}
+
+/* 3D Flip Card CSS */
+.perspective-1000 {
+  perspective: 1500px;
+}
+.transform-style-3d {
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+.backface-hidden {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+.rotate-y-180 {
+  transform: rotateY(180deg);
+}
+
+/* Eco Mode / Fix Lag Styles (Strict Performance Optimization) */
+.eco-mode body, .eco-mode .dark body {
+  animation: none !important;
+  background-image: none !important;
+}
+.eco-mode body {
+  background-color: #fafafa !important;
+}
+.eco-mode.dark body {
+  background-color: #09090b !important;
+}
+.eco-mode * {
+  animation: none !important;
+  transition: none !important;
+  box-shadow: none !important;
+  text-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  filter: none !important;
+}
+
+.eco-mode [class*="animate-"] {
+  animation: none !important;
+  transition: none !important;
+}
+
+.eco-mode .card-3d:hover, .eco-mode .glass:hover {
+  transform: none !important;
+}
+
+.eco-mode .glass, .eco-mode .card-3d {
+  background-color: #ffffff !important;
+  border-color: #cbd5e1 !important;
+  color: #000000 !important;
+}
+.eco-mode.dark .glass, .eco-mode.dark .card-3d {
+  background-color: #09090b !important;
+  border-color: #1e293b !important;
+  color: #ffffff !important;
+}
+
+.eco-mode .transform-style-3d {
+  transform-style: preserve-3d !important;
+}
+.eco-mode .backface-hidden {
+  backface-visibility: hidden !important;
+  -webkit-backface-visibility: hidden !important;
+  background-color: #ffffff !important;
+  color: #000000 !important;
+  border-color: #cbd5e1 !important;
+}
+.eco-mode.dark .backface-hidden {
+  background-color: #09090b !important;
+  color: #ffffff !important;
+  border-color: #1e293b !important;
+}
+.eco-mode .backface-hidden * {
+  text-shadow: none !important;
+}
+
+/* Scaling */
+.card-3d, .glass {
+  margin-bottom: calc(0.5rem + 0.25rem * var(--app-font-scale, 1)) !important;
+  border-radius: calc(0.75rem + 0.25rem * var(--app-font-scale, 1)) !important;
+}
+
+.btn-3d {
+  border-radius: calc(0.5rem + 0.25rem * var(--app-font-scale, 1)) !important;
+}
+
+.input-3d {
+  border-radius: calc(0.5rem + 0.25rem * var(--app-font-scale, 1)) !important;
+}
+
+.modal-glass-content {
+  border-radius: calc(1rem + 0.5rem * var(--app-font-scale, 1)) !important;
+}
