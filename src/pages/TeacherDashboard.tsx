@@ -68,6 +68,10 @@ export default function TeacherDashboard() {
   const [targetMoveCategory, setTargetMoveCategory] = useState("");
   const [isNewCategoryInput, setIsNewCategoryInput] = useState(false);
   const [isMovingBulk, setIsMovingBulk] = useState(false);
+  
+  const [enableBulkRename, setEnableBulkRename] = useState(false);
+  const [renameFixedName, setRenameFixedName] = useState("");
+  const [renameStartIndex, setRenameStartIndex] = useState<number>(1);
 
   // AI Lesson Plan States
   const [lessonTopic, setLessonTopic] = useState("");
@@ -640,8 +644,12 @@ export default function TeacherDashboard() {
       const { writeBatch, doc } = await import("firebase/firestore");
       const batch = writeBatch(db);
       
-      selectedDeckIds.forEach((id) => {
-        batch.update(doc(db, "sets", id), { subject: destination });
+      selectedDeckIds.forEach((id, idx) => {
+        let updateData: any = { subject: destination };
+        if (enableBulkRename && renameFixedName.trim()) {
+           updateData.title = `${renameFixedName.trim()} ${renameStartIndex + idx}`;
+        }
+        batch.update(doc(db, "sets", id), updateData);
       });
       
       await batch.commit();
@@ -649,7 +657,12 @@ export default function TeacherDashboard() {
       // Update local state
       const updated = localDecks.map(deck => {
         if (selectedDeckIds.includes(deck.id)) {
-          return { ...deck, subject: destination };
+          const idx = selectedDeckIds.indexOf(deck.id);
+          let finalData: any = { ...deck, subject: destination };
+          if (enableBulkRename && renameFixedName.trim()) {
+             finalData.title = `${renameFixedName.trim()} ${renameStartIndex + idx}`;
+          }
+          return finalData;
         }
         return deck;
       });
@@ -659,6 +672,9 @@ export default function TeacherDashboard() {
       setShowMoveBulkModal(false);
       setTargetMoveCategory("");
       setIsNewCategoryInput(false);
+      setEnableBulkRename(false);
+      setRenameFixedName("");
+      setRenameStartIndex(1);
     } catch (err: any) {
       console.error("Lỗi khi di dời loạt thẻ:", err);
       alert("Gặp lỗi khi di dời: " + err.message);
@@ -1361,7 +1377,7 @@ export default function TeacherDashboard() {
                         return (
                           <div key={subject} className="glass p-5 rounded-2xl border border-zinc-200 dark:border-zinc-800/80 space-y-3 relative">
                             <div 
-                              className="flex items-center justify-between border-b border-orange-600/20 dark:border-orange-500/30 pb-2 pt-2 px-1 gap-2 sticky top-0 z-10 bg-white/95 dark:bg-zinc-900/95 backdrop-blur-md shadow-sm cursor-pointer"
+                              className="flex items-center justify-between border-b border-orange-600/20 dark:border-orange-500/30 pb-2 pt-2 px-1 gap-2 sticky top-0 z-10 bg-white/95 dark:bg-zinc-900/95 backdrop-blur-md shadow-sm cursor-pointer content-visibility-auto gpu-accelerated"
                               onClick={() => toggleCategory(subject)}
                             >
                               <div className="flex items-center gap-2">
@@ -1461,7 +1477,7 @@ export default function TeacherDashboard() {
                     ) as [string, Deck[]][]).map(([subject, subjectDecks]) => (
                       <div key={subject} className="space-y-3 relative">
                         <div 
-                           className="flex items-center justify-between border-b border-orange-600/20 dark:border-orange-500/30 pb-2 pt-2 px-1 gap-2 sticky top-0 z-10 bg-white/95 dark:bg-zinc-900/95 backdrop-blur-md shadow-[0_4px_10px_-4px_rgba(0,0,0,0.1)] dark:shadow-[0_4px_10px_-4px_rgba(0,0,0,0.3)] cursor-pointer"
+                           className="flex items-center justify-between border-b border-orange-600/20 dark:border-orange-500/30 pb-2 pt-2 px-1 gap-2 sticky top-0 z-10 bg-white/95 dark:bg-zinc-900/95 backdrop-blur-md shadow-[0_4px_10px_-4px_rgba(0,0,0,0.1)] dark:shadow-[0_4px_10px_-4px_rgba(0,0,0,0.3)] cursor-pointer content-visibility-auto gpu-accelerated"
                            onClick={() => toggleCategory(subject)}
                         >
                           {editingCategory === subject ? (
@@ -1541,7 +1557,7 @@ export default function TeacherDashboard() {
                         </div>
                         
                         {expandedCategories[subject] && subjectDecks.map(deck => (
-                          <div key={deck.id} className="flex flex-col sm:flex-row justify-between sm:items-center p-3 gap-3 bg-zinc-100 dark:bg-zinc-900/60 rounded-xl border border-zinc-200/60 dark:border-zinc-800/50 hover:bg-zinc-150/40 dark:hover:bg-zinc-850/30 transition-colors">
+                          <div key={deck.id} className="flex flex-col sm:flex-row justify-between sm:items-center p-3 gap-3 bg-zinc-100 dark:bg-zinc-900/60 rounded-xl border border-zinc-200/60 dark:border-zinc-800/50 hover:bg-zinc-150/40 dark:hover:bg-zinc-850/30 transition-colors content-visibility-auto gpu-accelerated">
                             <div className="flex items-start gap-3 flex-1 min-w-[150px]">
                               <input
                                 type="checkbox"
@@ -1938,6 +1954,46 @@ export default function TeacherDashboard() {
                     </option>
                   ))}
                 </select>
+              )}
+            </div>
+
+            <div className="mb-4 pt-4 border-t border-zinc-200/50 dark:border-zinc-800/50">
+              <label className="flex items-center gap-2 text-xs font-black uppercase tracking-wider opacity-80 cursor-pointer mb-3">
+                <input 
+                  type="checkbox" 
+                  checked={enableBulkRename}
+                  onChange={(e) => setEnableBulkRename(e.target.checked)}
+                  className="rounded border-zinc-300 dark:border-zinc-700 text-orange-500 focus:ring-orange-500"
+                />
+                Đồng thời đổi tên hàng loạt theo quy tắc
+              </label>
+              
+              {enableBulkRename && (
+                <div className="p-3 bg-orange-500/5 dark:bg-orange-500/10 rounded-xl border border-orange-500/20 space-y-3">
+                   <div>
+                     <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-wide mb-1 block">Tên cố định (Vd: Phần)</label>
+                     <input
+                        type="text"
+                        placeholder="Nhập tên..."
+                        value={renameFixedName}
+                        onChange={(e) => setRenameFixedName(e.target.value)}
+                        className="w-full bg-white dark:bg-zinc-900 border border-zinc-250 dark:border-zinc-800 rounded-lg p-2 text-xs font-bold outline-none text-zinc-900 dark:text-zinc-100"
+                      />
+                   </div>
+                   <div>
+                     <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-wide mb-1 block">Bắt đầu từ số N =</label>
+                     <input
+                        type="number"
+                        min="1"
+                        value={renameStartIndex}
+                        onChange={(e) => setRenameStartIndex(Number(e.target.value) || 1)}
+                        className="w-full bg-white dark:bg-zinc-900 border border-zinc-250 dark:border-zinc-800 rounded-lg p-2 text-xs font-bold outline-none text-zinc-900 dark:text-zinc-100"
+                      />
+                   </div>
+                   <p className="text-[10px] text-orange-600 dark:text-orange-400 font-medium pt-1">
+                     * Các bộ được chọn sẽ có tên bắt đầu là: <strong className="font-black text-xs text-orange-700 dark:text-orange-300">{renameFixedName.trim() ? `"${renameFixedName.trim()} ${renameStartIndex}", "${renameFixedName.trim()} ${renameStartIndex + 1}"...` : "..."}</strong>
+                   </p>
+                </div>
               )}
             </div>
 

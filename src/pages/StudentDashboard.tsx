@@ -2825,7 +2825,7 @@ export default function StudentDashboard() {
                           whileHover={{ scale: 1.02 }}
                           onClick={() => setSelectedUserProfile(u)}
                           key={u.id} className={cn(
-                            "group flex items-center justify-between p-3 sm:p-4 rounded-xl border transition-all cursor-pointer backdrop-blur-md content-visibility-auto", 
+                            "group flex items-center justify-between p-3 sm:p-4 rounded-xl border transition-all cursor-pointer backdrop-blur-md content-visibility-auto gpu-accelerated", 
                             u.id === user?.id 
                               ? "bg-orange-500/15 border-orange-500 shadow-lg ring-1 ring-orange-500/50" 
                               : "bg-white/40 dark:bg-black/20 border-zinc-200 dark:border-zinc-800 hover:border-orange-500/30 hover:bg-white/60 dark:hover:bg-black/40"

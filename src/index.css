@@ -395,6 +395,13 @@ svg[class*="lucide"] {
   animation: none !important;
 }
 
+/* 60FPS Hardware Acceleration & Rendering Optimizations */
+.gpu-accelerated {
+  transform: translateZ(0);
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+}
+
 /* Optimize long list performance */
 .content-visibility-auto {
   content-visibility: auto;

@@ -483,10 +483,11 @@ export function ServiceMonitor({ adminKey }: { adminKey: string }) {
     return () => clearInterval(qInterval);
   }, []);
 
-  const activeCount = keys.filter(k => k.status === 'active').length;
-  const limitedCount = keys.filter(k => k.status === 'rate_limited').length;
-  const failedCount = keys.filter(k => k.status === 'failed').length;
-  const statusScore = keys.length === 0 ? 100 : ((activeCount * 1 + limitedCount * 0.5 + failedCount * 0) / keys.length) * 100;
+  const allKeys = [...keys, ...openRouterKeys, ...groqKeys, ...deepInfraKeys];
+  const activeCount = allKeys.filter(k => k.status === 'active').length;
+  const limitedCount = allKeys.filter(k => k.status === 'rate_limited').length;
+  const failedCount = allKeys.filter(k => k.status === 'failed').length;
+  const statusScore = allKeys.length === 0 ? 100 : ((activeCount * 1 + limitedCount * 0.5 + failedCount * 0) / allKeys.length) * 100;
   const healthScore = Math.round(statusScore);
 
   return (
@@ -500,11 +501,11 @@ export function ServiceMonitor({ adminKey }: { adminKey: string }) {
             </span>
           </div>
           <div className="w-full bg-zinc-200 dark:bg-zinc-800 rounded-full h-2 mt-4 overflow-hidden flex">
-            {keys.length > 0 && (
+            {allKeys.length > 0 && (
               <>
-                <div className="h-full bg-green-500 transition-all duration-500" style={{ width: `${(activeCount / keys.length) * 100}%` }}></div>
-                <div className="h-full bg-orange-500 transition-all duration-500" style={{ width: `${(limitedCount / keys.length) * 100}%` }}></div>
-                <div className="h-full bg-red-500 transition-all duration-500" style={{ width: `${(failedCount / keys.length) * 100}%` }}></div>
+                <div className="h-full bg-green-500 transition-all duration-500" style={{ width: `${(activeCount / allKeys.length) * 100}%` }}></div>
+                <div className="h-full bg-orange-500 transition-all duration-500" style={{ width: `${(limitedCount / allKeys.length) * 100}%` }}></div>
+                <div className="h-full bg-red-500 transition-all duration-500" style={{ width: `${(failedCount / allKeys.length) * 100}%` }}></div>
               </>
             )}
           </div>
@@ -556,7 +557,9 @@ export function ServiceMonitor({ adminKey }: { adminKey: string }) {
                 Real-time Health Monitor
               </h2>
               <p className="text-zinc-500 dark:text-zinc-400 text-sm mt-1">
-                Monitoring {totalKeys} API keys. Round-Robin Queue is currently pointing to index: <span className="font-mono bg-zinc-200 dark:bg-zinc-800 px-2 py-0.5 rounded">{currentIndex}</span>
+                Monitoring {totalKeys + totalOpenRouterKeys + totalGroqKeys + deepInfraKeys.length} API keys across {
+                   [totalKeys > 0 ? "Gemini" : "", totalOpenRouterKeys > 0 ? "OpenRouter" : "", totalGroqKeys > 0 ? "Groq" : "", deepInfraKeys.length > 0 ? "DeepInfra" : ""].filter(Boolean).join(", ") || "all providers"
+                }.
               </p>
             </div>
             
@@ -634,7 +637,7 @@ export function ServiceMonitor({ adminKey }: { adminKey: string }) {
       );
     }
     
-    if (keys.length === 0) {
+    if (keys.length === 0 && openRouterKeys.length === 0 && groqKeys.length === 0 && deepInfraKeys.length === 0) {
       return <div className="p-8 text-center text-zinc-500">No API keys found.</div>;
     }
 
